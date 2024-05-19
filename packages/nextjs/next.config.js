@@ -12,7 +12,21 @@ const nextConfig = {
   webpack: config => {
     config.resolve.fallback = { fs: false, net: false, tls: false };
     config.externals.push("pino-pretty", "lokijs", "encoding");
+    config.snapshot = {
+      ...(config.snapshot ?? {}),
+      // Add all node_modules to managedPaths, EXCEPT wagmi-connector, next/swc (which show
+      // warnings if added). Allows for hot refresh of changes
+      managedPaths: [/^(.+?[\\/]node_modules[\\/](?!(@privy-io[\\/]wagmi-connector|@next|@swc))(@.+?[\\/])?.+?)[\\/]/],
+    };
     return config;
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
   },
 };
 
